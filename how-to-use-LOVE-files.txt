@@ -1,0 +1,11 @@
+These *.love files can be used in 2 ways:
+
+1- Use as an app:
+Install LOVE2D from its website and use it to use *.love files as an app.
+The "love executable" opens a *.love file to start it.
+It works also to open directories, but this should contain a "main.lua" file sourcecode.
+
+2- Use as a sourcecode archive:
+Open *.love files like *.zip files and you have the origin of these files
+ for editing and other peruse like study or security inspection.
+You can extract zips to directories which the "love executable" can start.

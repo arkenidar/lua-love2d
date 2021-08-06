@@ -1,0 +1,4 @@
+v1: white button, click it to quit app
+v2: added image for button, but not scaled well
+v3: button image scaled see v2, buttons with states used for checkboxes toggle buttons
+v4: "reconf" is reloading configuration files without restarting and keeping states of (checkbox) buttons
