@@ -1,9 +1,8 @@
+local handles={}
+handles[1]={50,50,500,50}
+handles[2]={100,100,500,50}
 
-handle_1={50,50,500,50,mouse_grab_offset=nil} -- handle 1
-handle_2={100,100,500,50,mouse_grab_offset=nil} -- handle 2
-handle_grabbed_one=nil
-
-function handle_area_draw(handle)
+function handle_area_draw(handle,key)
   local xywh=handle
   local mouse_down=love.mouse.isDown(1)
   love.graphics.setColor(0,0,1) -- blue color
@@ -34,10 +33,29 @@ function handle_area_draw(handle)
   if handle_grabbed_one==handle then
     love.graphics.setColor(1,0,0) -- red color (grabbed)
   end
-  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh (handle)
+  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3]-xywh[4], xywh[4]) -- xywh (handle)
+  
+  local button_quit={xywh[1]+(xywh[3]-xywh[4]),xywh[2], xywh[4],xywh[4],
+  
+  function (button)
+    love.graphics.setColor(0,1,0) -- green color
+    local xywh=button
+    love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh (button)
+  end,
+  
+  function()
+    --love.event.quit()
+    handles[key]=nil -- delete
+  end
+  
+  }
+  button_draw(button_quit)
+  
+  love.graphics.setColor(0.5,0.5,0.5) -- grey color
+  love.graphics.rectangle("fill", xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]) -- xywh (area border)
 
   love.graphics.setColor(1,1,1) -- white color
-  love.graphics.rectangle("fill", xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]) -- xywh (area)
+  love.graphics.rectangle("fill", xywh[1]+10, xywh[2]+xywh[4]+10, xywh[3]-20, 4*xywh[4]-20) -- xywh (area)
 end
 
 function point_in_rectangle(point,xywh)
@@ -48,13 +66,6 @@ function point_in_rectangle(point,xywh)
     point[2]<=(xywh[2]+xywh[4])
 end
 
-button_quit={10,10, 100,100,
-  function (button)
-    love.graphics.setColor(0,1,0) -- green color
-    local xywh=button
-    love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh (button)
-  end,
-  function() love.event.quit() end}
 function button_draw(button)
   -- click pressed
   if love.mouse.isDown(1) and
@@ -70,8 +81,10 @@ function button_draw(button)
 end
 
 function love.draw()
-  handle_area_draw(handle_1)
-  handle_area_draw(handle_2)
-  button_draw(button_quit)
+  -- handle input front to back
+  -- draw surfaces back to front
+  -- TODO separate input from drawing
+  for key,handle in pairs(handles) do
+    handle_area_draw(handle,key)
+  end
 end
-
