@@ -1,11 +1,11 @@
 
-xywh={50,50,100,100}
+xywh={50,50,500,50} -- handle
 
 mouse_grab_offset=nil
 
 function love.draw()
   
-  love.graphics.setColor(1,1,1) -- white color
+  love.graphics.setColor(0,0,1) -- blue color
   
   mouse={love.mouse.getX(),love.mouse.getY()}
   if love.mouse.isDown(1) then
@@ -22,6 +22,9 @@ function love.draw()
   end
   
   love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
+
+  love.graphics.setColor(1,1,1) -- white color
+  love.graphics.rectangle("fill", xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]) -- xywh
 end
 
 function point_in_rectangle(point,xywh)
