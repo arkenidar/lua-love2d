@@ -2,7 +2,7 @@ handles={}
 handles[1]={50,50,500,50} -- xywh
 handles[2]={100,100,500,50} -- xywh
 
-function handle_area_draw(handle,key)
+function handle_area_draw(handle)
   local xywh=handle
   local mouse_down=love.mouse.isDown(1)
   love.graphics.setColor(0,0,1) -- blue color
@@ -33,17 +33,19 @@ function handle_area_draw(handle,key)
   if handle_grabbed_one==handle then
     love.graphics.setColor(1,0,0) -- red color (grabbed)
     
+    -- when grabbed:
     -- bring to front (back-to-front drawing order)
-    local this=handles[key]
-    local new_handles={}
-    for key,value in pairs(handles) do
-      if value~=this then
-        table.insert(new_handles,value)
+    -- remove it (copy Lua table without it)
+    local handles_new={}
+    for _,value in pairs(handles) do
+      if value~=handle then -- without it
+        table.insert(handles_new,value) -- copy
       end
     end
-    table.insert(new_handles,this)
-    handles=new_handles
-    -- end of bring to front
+    -- insert at the end
+    table.insert(handles_new,handle)
+    handles=handles_new
+    -- end of: bring to front
   end
   love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3]-xywh[4], xywh[4]) -- xywh (handle)
   
@@ -56,7 +58,11 @@ function handle_area_draw(handle,key)
   end,
   
   function()
-    handles[key]=nil -- delete
+    for key,value in pairs(handles) do
+      if value==handle then        
+        handles[key]=nil -- delete
+      end
+    end
   end
   
   }
@@ -95,7 +101,7 @@ function love.draw()
   -- handle input front to back
   -- draw surfaces back to front
   -- TODO separate input from drawing
-  for key,handle in pairs(handles) do
-    handle_area_draw(handle,key)
+  for _,handle in pairs(handles) do
+    handle_area_draw(handle)
   end
 end
