@@ -1,6 +1,6 @@
-local handles={}
-handles[1]={50,50,500,50}
-handles[2]={100,100,500,50}
+handles={}
+handles[1]={50,50,500,50} -- xywh
+handles[2]={100,100,500,50} -- xywh
 
 function handle_area_draw(handle,key)
   local xywh=handle
@@ -32,10 +32,22 @@ function handle_area_draw(handle,key)
   
   if handle_grabbed_one==handle then
     love.graphics.setColor(1,0,0) -- red color (grabbed)
+    
+    -- bring to front (back-to-front drawing order)
+    local this=handles[key]
+    local new_handles={}
+    for key,value in pairs(handles) do
+      if value~=this then
+        table.insert(new_handles,value)
+      end
+    end
+    table.insert(new_handles,this)
+    handles=new_handles
+    -- end of bring to front
   end
   love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3]-xywh[4], xywh[4]) -- xywh (handle)
   
-  local button_quit={xywh[1]+(xywh[3]-xywh[4]),xywh[2], xywh[4],xywh[4],
+  local button_delete={xywh[1]+(xywh[3]-xywh[4]),xywh[2], xywh[4],xywh[4],
   
   function (button)
     love.graphics.setColor(0,1,0) -- green color
@@ -44,12 +56,11 @@ function handle_area_draw(handle,key)
   end,
   
   function()
-    --love.event.quit()
     handles[key]=nil -- delete
   end
   
   }
-  button_draw(button_quit)
+  button_draw(button_delete)
   
   love.graphics.setColor(0.5,0.5,0.5) -- grey color
   love.graphics.rectangle("fill", xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]) -- xywh (area border)
