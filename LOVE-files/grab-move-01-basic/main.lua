@@ -3,6 +3,17 @@ xywh1={50,50,100,100}
 xywh2={150+10,50,100,100}
 handles={xywh1,xywh2,{250+20,50,100,100}}
 
+function positioning_increments(items,dx,dy)
+  local x,y=items[1][1],items[1][2]
+  for _,item in pairs(items) do
+    item[1]=x
+    item[2]=y
+    x=x+dx
+    y=y+dy
+  end
+end
+positioning_increments(handles,30,10)
+
 function mouse_coordinates()
   return {love.mouse.getX(),love.mouse.getY()}
 end
@@ -34,12 +45,25 @@ end
 
 function handle_draw(handle)
   local xywh=handle
-  love.graphics.setColor(1,1,1) -- white color
+  local r,g,b=1,1,1 -- white color
+  --love.graphics.setColor(r,g,b)
+  ---[[
   if xywh.mouse_grab_offset~=nil then -- if grabbed
-    love.graphics.setColor(1,0,0) -- red color
+    --love.graphics.setColor(1,0,0) -- red color
+    r,g,b=1,0,0 -- red color
   end
+  --]]
+  
+  --love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
+  
+  love.graphics.setColor(0.2,0.2,0.2) -- grey color (border color)
+  -- xywh (area border)
+  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4])
 
-  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
+  local border=5
+  love.graphics.setColor(r,g,b) -- selected color (inner color)
+  -- xywh (inner area inside the border)
+  love.graphics.rectangle("fill", xywh[1]+border, xywh[2]+border, xywh[3]-border*2, xywh[4]-border*2)
 end
 
 function love.draw()

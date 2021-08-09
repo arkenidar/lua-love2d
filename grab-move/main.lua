@@ -1,6 +1,6 @@
 handles={}
 handles[1]={50,50,500,50} -- xywh
-handles[2]={100,100,500,50} -- xywh
+handles[2]={100,100+20,500,50} -- xywh
 
 function handle_area_draw(handle)
   local xywh=handle
