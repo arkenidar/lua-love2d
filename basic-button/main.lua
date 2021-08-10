@@ -1,3 +1,5 @@
+require("mobdebug").start()
+
 -- draw image scaled and fitting rectangle
 function image_draw(image,xywh)
   -- scale factors
