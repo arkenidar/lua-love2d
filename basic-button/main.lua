@@ -12,18 +12,31 @@ end
 -- conf-buttons.lua file
 require("conf-buttons")
 
+function point_in_rectangle(point,xywh)
+  return
+    point[1]>=xywh[1] and
+    point[1]<=(xywh[1]+xywh[3]) and
+    point[2]>=xywh[2] and
+    point[2]<=(xywh[2]+xywh[4])
+end
+function mouse_coordinates()
+  return {love.mouse.getX(),love.mouse.getY()}
+end
 function button_draw(button)
   -- click just pressed (not before)
   if click_down==1 and
     -- check for mouse pointer being inside the rectagle
+    point_in_rectangle(mouse_coordinates(),button)
+    --[[
     love.mouse.getX() >= button[1] and
     love.mouse.getX() <= (button[1]+button[3]) and
     love.mouse.getY() >= button[2] and
     love.mouse.getY() <= (button[2]+button[4])
+    --]]
   then
-    button[6](button) -- action
+    button:action()
   end
-  button[5](button) -- draw
+  button:draw()
 end
 
 click_down=0 -- counter for mouse button pressed
