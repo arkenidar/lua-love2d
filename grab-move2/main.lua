@@ -1,7 +1,16 @@
-
-xywh1={50,50,100,100}
-xywh2={150+10,50,100,100}
-handles={xywh1,xywh2,{250+20,50,100,100}}
+local width=25
+local height=25
+--xywh1={50,50,width,height}
+--xywh2={150+10,50,width,height}
+--[[
+local x1=150
+local y1=80
+local x2=50
+local y2=200
+--]]
+xywh1={150,80,width,height}
+xywh2={50,200,width,height}
+handles={xywh1,xywh2,{250+20,50,width,height}}
 
 function positioning_increments(items,dx,dy)
   local x,y=items[1][1],items[1][2]
@@ -12,7 +21,7 @@ function positioning_increments(items,dx,dy)
     y=y+dy
   end
 end
-positioning_increments(handles,30,10)
+--positioning_increments(handles,30,10)
 
 function mouse_coordinates()
   return {love.mouse.getX(),love.mouse.getY()}
@@ -66,12 +75,50 @@ function handle_draw(handle)
   love.graphics.rectangle("fill", xywh[1]+border, xywh[2]+border, xywh[3]-border*2, xywh[4]-border*2)
 end
 
+------------------------------------------
+
+function distance(x1,y1,x2,y2)
+return math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1))
+end
+
+
+function draw_formula()
+love.graphics.setColor(0,.7,0)
+--[[
+local x1=150
+local y1=80
+local x2=50
+local y2=200
+--]]
+local x1=xywh1[1]+xywh1[3]/2
+local y1=xywh1[2]+xywh1[4]/2
+local x2=xywh2[1]+xywh1[3]/2
+local y2=xywh2[2]+xywh1[4]/2
+
+  for x=0,1000 do
+    for y=0,1000 do
+      -- ellipse definition
+      if (
+      distance(x,y,x1,y1)+
+      distance(x,y,x2,y2))<300 then
+        love.graphics.points({ {x,y} })
+      end
+    end
+  end
+
+end
+
+------------------------------------------
+
 function love.draw()
 
   -- input: front to back order
   for i = #handles,1,-1 do
     handle_grab(handles[i])
   end
+
+  -- drawing: background
+  draw_formula()
 
   -- drawing: back to front order
   for i = 1,#handles,1 do
