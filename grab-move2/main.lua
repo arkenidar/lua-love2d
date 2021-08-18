@@ -95,12 +95,12 @@ local y1=xywh1[2]+xywh1[4]/2
 local x2=xywh2[1]+xywh1[3]/2
 local y2=xywh2[2]+xywh1[4]/2
 
-  for x=0,1000 do
-    for y=0,1000 do
+  for x=0,200 do
+    for y=0,200 do
       -- ellipse definition
       if (
       distance(x,y,x1,y1)+
-      distance(x,y,x2,y2))<300 then
+      distance(x,y,x2,y2))<170 then
         love.graphics.points({ {x,y} })
       end
     end
