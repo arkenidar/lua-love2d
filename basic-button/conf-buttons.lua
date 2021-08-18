@@ -76,6 +76,16 @@ toggle_1_label={toggle_1[1]+toggle_1[3],toggle_1[2], size*3,size, draw=toggle_la
 
 toggle_2_label={toggle_2[1]+toggle_2[3],toggle_2[2], size*3,size, draw=toggle_label_draw, action=toggle_label_action, linked="toggle_2", text_label="toggle 2 text label"}
 
+local shared_state1
+function visible_tab()
+  return shared_state1[1]=="exclusive2"
+end
+
+toggle_1.visible=visible_tab
+toggle_2.visible=visible_tab
+toggle_1_label.visible=visible_tab
+toggle_2_label.visible=visible_tab
+
 button_list.toggle_1=toggle_1
 button_list.toggle_2=toggle_2
 button_list.toggle_1_label=toggle_1_label
@@ -98,7 +108,7 @@ function toggle_action_exclusive(button)
   --button.state=true
 end
 
-local shared_state1={}
+shared_state1={}
 ---local mutually_exclusive1={"exclusive1","exclusive2"}
 button_list.exclusive1={200,10, 50,50, draw=toggle_draw_exclusive,action=toggle_action_exclusive,
   ---state=false,mutex=mutually_exclusive1}
@@ -112,6 +122,8 @@ shared_state1[1]="exclusive2"
 --button_list={quit=button_quit,toggle_1=button_toggle_1,toggle_2=button_toggle_2,live_added=button_live_added} -- toggle_2=button_toggle_2,
 function draw_all_buttons()
   for key,button in pairs(button_list) do
-    button_draw(button)
+    if button.visible==nil or button.visible() then
+      button_draw(button)
+    end
   end
 end
