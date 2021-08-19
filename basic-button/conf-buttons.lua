@@ -25,10 +25,26 @@ function conf_buttons_reload()
   end
 end
 
+function rectangular(xywh,r,g,b)
+  --local r,g,b=0,1,0
+  love.graphics.setColor(0.2,0.2,0.2) -- grey color (border color)
+  -- xywh (area border)
+  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4])
+
+  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
+  local border=5
+  love.graphics.setColor(r,g,b) -- selected color (inner color)
+  -- xywh (inner area inside the border)
+  love.graphics.rectangle("fill", xywh[1]+border, xywh[2]+border, xywh[3]-border*2, xywh[4]-border*2)
+  -- reset
+  love.graphics.setColor(1,1,1) -- reset to white
+end
+----------------------------
 local quit={10,10, 100,100}
 function quit.draw(button) image_draw(images.x,button) end
 function quit.action() love.event.quit() end
 button_list.quit=quit
+----------------------------
 
 function toggle_draw(button)
   local state
@@ -76,15 +92,16 @@ toggle_1_label={toggle_1[1]+toggle_1[3],toggle_1[2], size*3,size, draw=toggle_la
 
 toggle_2_label={toggle_2[1]+toggle_2[3],toggle_2[2], size*3,size, draw=toggle_label_draw, action=toggle_label_action, linked="toggle_2", text_label="toggle 2 text label"}
 
-local shared_state1
-function visible_tab()
-  return shared_state1[1]=="exclusive2"
+---local shared_state1
+function visible_tab_2()
+  ---return shared_state1[1]=="exclusive2"
+  return button_list.exclusive2.state
 end
 
-toggle_1.visible=visible_tab
-toggle_2.visible=visible_tab
-toggle_1_label.visible=visible_tab
-toggle_2_label.visible=visible_tab
+toggle_1.visible=visible_tab_2
+toggle_2.visible=visible_tab_2
+toggle_1_label.visible=visible_tab_2
+toggle_2_label.visible=visible_tab_2
 
 button_list.toggle_1=toggle_1
 button_list.toggle_2=toggle_2
@@ -95,33 +112,62 @@ button_list.toggle_2_label=toggle_2_label
 -- exclusive selection
 function toggle_draw_exclusive(button)  
   local current
-  current=button.id==button.state[1]
-  ---current=button.state
+  ---current=button.id==button.state[1]
+  current=button.state
   local state
   if current then state="x" else state="empty" end
   image_draw(images[state],button)
 end
 function toggle_action_exclusive(button)
-  button.state[1]=button.id
-  --local group=button.mutex
-  --for _,name in pairs(group) do button_list[name].state=false end
-  --button.state=true
+  ---button.state[1]=button.id
+  local group=button.mutex
+  for _,name in pairs(group) do button_list[name].state=false end
+  button.state=true
 end
 
-shared_state1={}
----local mutually_exclusive1={"exclusive1","exclusive2"}
+---shared_state1={}
+local mutually_exclusive1={"exclusive1","exclusive2"}
 button_list.exclusive1={200,10, 50,50, draw=toggle_draw_exclusive,action=toggle_action_exclusive,
-  ---state=false,mutex=mutually_exclusive1}
-  state=shared_state1, id="exclusive1"}
+  state=false,mutex=mutually_exclusive1}
+  ---state=shared_state1, id="exclusive1"}
 button_list.exclusive2={200+50+10,10, 50,50, draw=toggle_draw_exclusive,action=toggle_action_exclusive,
-  ---state=true,mutex=mutually_exclusive1}
-  state=shared_state1, id="exclusive2"}
-shared_state1[1]="exclusive2"
+  state=true,mutex=mutually_exclusive1}
+  --state=shared_state1, id="exclusive2"}
+---shared_state1[1]="exclusive2"
 --]]
 
+local panel_background={toggle_1[1]-10,toggle_1[2]-10, 3*100,2*100}
+function panel_background.draw(button)
+  rectangular(button,0,0,0)
+  ---draw_centered_text(button[1],button[2],button[3],button[4],"panel text")
+end
+function panel_background.action() end
+button_list.panel_background=panel_background
+
+
+local panel_tab1={toggle_1[1]-10,toggle_1[2]-10, 3*100,2*100}
+function panel_tab1.draw(button)
+  ---rectangular(button,0,0,0)
+  draw_centered_text(button[1],button[2],button[3],button[4],"panel text")
+end
+function panel_tab1.action() end
+function visible_tab_1()
+  return button_list.exclusive1.state
+end
+panel_tab1.visible=visible_tab_1
+button_list.panel_tab1=panel_tab1
+
+
 --button_list={quit=button_quit,toggle_1=button_toggle_1,toggle_2=button_toggle_2,live_added=button_live_added} -- toggle_2=button_toggle_2,
+button_list_back_to_front={
+panel_background,
+button_list.exclusive1,button_list.exclusive2,
+toggle_1,toggle_1_label,
+toggle_2,toggle_2_label,
+panel_tab1,
+quit}
 function draw_all_buttons()
-  for key,button in pairs(button_list) do
+  for key,button in ipairs(button_list_back_to_front) do
     if button.visible==nil or button.visible() then
       button_draw(button)
     end
