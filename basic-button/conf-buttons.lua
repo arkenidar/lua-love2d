@@ -114,9 +114,14 @@ function toggle_draw_exclusive(button)
   local current
   ---current=button.id==button.state[1]
   current=button.state
+  --[[
   local state
   if current then state="x" else state="empty" end
   image_draw(images[state],button)
+  --]]
+  local r,g,b
+  if current then r,g,b=1,1,1 else r,g,b=0,0,0 end
+  rectangular(button,r,g,b)
 end
 function toggle_action_exclusive(button)
   ---button.state[1]=button.id
@@ -127,14 +132,16 @@ end
 
 ---shared_state1={}
 local mutually_exclusive1={"exclusive1","exclusive2"}
-button_list.exclusive1={200,10, 50,50, draw=toggle_draw_exclusive,action=toggle_action_exclusive,
+exclusive1={toggle_1[1],10, 100,50, draw=toggle_draw_exclusive,action=toggle_action_exclusive,
   state=false,mutex=mutually_exclusive1}
   ---state=shared_state1, id="exclusive1"}
-button_list.exclusive2={200+50+10,10, 50,50, draw=toggle_draw_exclusive,action=toggle_action_exclusive,
+exclusive2={exclusive1[1]+exclusive1[3]+10,10, exclusive1[3],exclusive1[4], draw=toggle_draw_exclusive,action=toggle_action_exclusive,
   state=true,mutex=mutually_exclusive1}
   --state=shared_state1, id="exclusive2"}
 ---shared_state1[1]="exclusive2"
 --]]
+button_list.exclusive1=exclusive1
+button_list.exclusive2=exclusive2
 
 local panel_background={toggle_1[1]-10,toggle_1[2]-10, 3*100,2*100}
 function panel_background.draw(button)
