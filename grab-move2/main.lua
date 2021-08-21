@@ -1,5 +1,5 @@
-local width=25
-local height=25
+local width=100
+local height=width
 --xywh1={50,50,width,height}
 --xywh2={150+10,50,width,height}
 --[[
@@ -27,29 +27,27 @@ function mouse_coordinates()
   return {love.mouse.getX(),love.mouse.getY()}
 end
 
-handle_currently_grabbed=nil
 function handle_grab(handle)
   local xywh=handle
   local mouse=mouse_coordinates()
-  if love.mouse.isDown(1) then -- mouse down
-    if xywh.mouse_grab_offset==nil then -- if ungrabbed
-      if point_in_rectangle(mouse,xywh) -- if inside
-      and handle_currently_grabbed==nil -- if none is grabbed already
-      then
-        -- grab
-        handle_currently_grabbed=handle
-        xywh.mouse_grab_offset={mouse[1]-xywh[1],mouse[2]-xywh[2]}
-      end
-    end
-    if xywh.mouse_grab_offset~=nil then -- if grabbed
-      xywh[1]=mouse[1]-xywh.mouse_grab_offset[1]
-      xywh[2]=mouse[2]-xywh.mouse_grab_offset[2]
-    end
-  else -- mouse up
-    xywh.mouse_grab_offset=nil -- un-grab
-    handle_currently_grabbed=nil
+  local propagate
+  if click_down==1 -- mouse just clicked
+  and point_in_rectangle(mouse,xywh) -- if inside
+  then
+    -- grab
+    xywh.mouse_grab_offset={mouse[1]-xywh[1],mouse[2]-xywh[2]}
+    propagate="stop_propagation" -- grab only one
   end
-
+  
+  if xywh.mouse_grab_offset~=nil then -- if grabbed
+    xywh[1]=mouse[1]-xywh.mouse_grab_offset[1]
+    xywh[2]=mouse[2]-xywh.mouse_grab_offset[2]
+  end
+  
+  if not love.mouse.isDown(1) then -- mouse up
+    xywh.mouse_grab_offset=nil -- un-grab
+  end
+  return propagate
 end
 
 function handle_draw(handle)
@@ -109,16 +107,30 @@ local y2=xywh2[2]+xywh1[4]/2
 end
 
 ------------------------------------------
-
+click_down=0 -- counter for mouse button pressed
+function click_get_input()
+  -- click button pressing (button down)
+  if love.mouse.isDown(1) and -- button 1 down
+      click_down<=500 then -- prevent integer overflow
+    click_down = click_down + 1 -- increment the counter
+  else -- click button release (button up)
+    click_down = 0 -- reset the counter to 0
+  end
+end
+------------------------------------------
 function love.draw()
 
+  -- input: click_get_input()
+  click_get_input()
+  
   -- input: front to back order
   for i = #handles,1,-1 do
-    handle_grab(handles[i])
+    local propagate= handle_grab(handles[i])
+    if propagate=="stop_propagation" then break end -- grab only one
   end
 
   -- drawing: background
-  draw_formula()
+  ---draw_formula()
 
   -- drawing: back to front order
   for i = 1,#handles,1 do
