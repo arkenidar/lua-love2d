@@ -2,6 +2,17 @@ handles={}
 handles[1]={50,50,500,50} -- xywh
 handles[2]={100,100+20,500,50} -- xywh
 
+inner={nil,nil, 100,100, offset={50,50}, super=handles[2]}
+function inner.draw(item)
+  love.graphics.setColor(1,0,0)
+  local xywh=item
+  xywh[1]=item.offset[1]+item.super[1]
+  xywh[2]=item.offset[2]+item.super[2]
+  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4])
+  love.graphics.setColor(1,1,1)
+end
+handles[2].sub={inner}
+
 function rectangular(xywh,r,g,b)
   love.graphics.setColor(1,1,1) -- white color (border color)
   -- xywh (area border)
@@ -126,6 +137,13 @@ function handle_area_draw(handle)
   love.graphics.setColor(1,1,1) -- white color
   love.graphics.rectangle("fill", xywh[1]+10, xywh[2]+xywh[4]+10, xywh[3]-20, 4*xywh[4]-20) -- xywh (area)
   --]]
+  
+  -- draw inner items (TODO WIP)
+  local items=handle.sub
+  if items==nil then items={} end
+  for _,item in pairs(items) do
+    item:draw()
+  end
 end
 
 -- methods
