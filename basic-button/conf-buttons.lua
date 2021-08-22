@@ -25,17 +25,18 @@ function conf_buttons_reload()
   end
 end
 
-function rectangular(xywh,r,g,b)
-  --local r,g,b=0,1,0
-  love.graphics.setColor(0.2,0.2,0.2) -- grey color (border color)
-  -- xywh (area border)
-  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4])
+----
 
+function rectangular(xywh,r,g,b)
+  love.graphics.setColor(1,1,1) -- white color (border color)
+  -- xywh (area border)
   love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
+
   local border=5
   love.graphics.setColor(r,g,b) -- selected color (inner color)
   -- xywh (inner area inside the border)
   love.graphics.rectangle("fill", xywh[1]+border, xywh[2]+border, xywh[3]-border*2, xywh[4]-border*2)
+  
   -- reset
   love.graphics.setColor(1,1,1) -- reset to white
 end
@@ -61,21 +62,8 @@ function draw_centered_text(rectX, rectY, rectWidth, rectHeight, text)
 end
 function toggle_label_draw(button)
   local xywh=button
-  --[[
-  local r,g,b=0,1,0
-  love.graphics.setColor(0.2,0.2,0.2) -- grey color (border color)
-  -- xywh (area border)
-  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4])
-
-  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
-  local border=5
-  love.graphics.setColor(r,g,b) -- selected color (inner color)
-  -- xywh (inner area inside the border)
-  love.graphics.rectangle("fill", xywh[1]+border, xywh[2]+border, xywh[3]-border*2, xywh[4]-border*2)
-  -- reset
-  love.graphics.setColor(1,1,1) -- reset to white
-  --]]
-  --love.graphics.print("text",xywh[1],xywh[2])
+  --rectangular(xywh,0,1,0)
+  --love.graphics.print(button.text_label,xywh[1],xywh[2])
   draw_centered_text(xywh[1],xywh[2],xywh[3],xywh[4], button.text_label)
 end
 function toggle_label_action(button)
@@ -144,7 +132,7 @@ exclusive2={exclusive1[1]+exclusive1[3]+10,10, exclusive1[3],exclusive1[4], draw
 --]]
 button_list.exclusive1=exclusive1
 button_list.exclusive2=exclusive2
-toggle_action_exclusive(exclusive2)
+toggle_action_exclusive(exclusive2) -- settings
 
 local panel_background={toggle_1[1]-10,toggle_1[2]-10, 3*100,2*100}
 function panel_background.draw(button)
