@@ -73,6 +73,11 @@ function handle_draw(handle)
   love.graphics.rectangle("fill", xywh[1]+border, xywh[2]+border, xywh[3]-border*2, xywh[4]-border*2)
 end
 
+-- methods
+for _,handle in pairs(handles) do
+  handle.draw=handle_draw
+  handle.action=handle_grab
+end
 ------------------------------------------
 
 function distance(x1,y1,x2,y2)
@@ -123,18 +128,17 @@ function love.draw()
   -- input: click_get_input()
   click_get_input()
   
+  local items=handles
   -- input: front to back order
-  for i = #handles,1,-1 do
-    local propagate= handle_grab(handles[i])
-    if propagate=="stop_propagation" then break end -- grab only one
+  for i = #items,1,-1 do
+    local propagate
+    propagate=items[i]:action()
+    if propagate=="stop_propagation" then break end
   end
 
-  -- drawing: background
-  ---draw_formula()
-
   -- drawing: back to front order
-  for i = 1,#handles,1 do
-    handle_draw(handles[i])
+  for i = 1,#items,1 do
+    items[i]:draw()
   end
 
 end
