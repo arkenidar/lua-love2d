@@ -1,5 +1,5 @@
 -- conf-buttons.lua file
-require("buttons")
+require("conf-buttons")
 
 handles={}
 handles[1]={50,50,500,50} -- xywh
