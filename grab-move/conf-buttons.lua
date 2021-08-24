@@ -44,7 +44,7 @@ end
 local quit={10,10, 100,100}
 function quit.draw(button) image_draw(images.x,button) end
 function quit.action() love.event.quit() end
-button_list.quit=quit
+---button_list.quit=quit
 ----------------------------
 
 function toggle_draw(button)
@@ -73,7 +73,7 @@ end
 
 space=10
 size=50
-toggle_1={space+100+space,space+size+space, size,size, draw=toggle_draw, action=toggle_action, state=true}
+toggle_1={space*2,space+size+space, size,size, draw=toggle_draw, action=toggle_action, state=true}
 toggle_2={toggle_1[1],toggle_1[2]+toggle_1[4]+space, size,size, draw=toggle_draw, action=toggle_action, state=false}
 
 toggle_1_label={toggle_1[1]+toggle_1[3],toggle_1[2], size*3,size, draw=toggle_label_draw, action=toggle_label_action, linked="toggle_1", text_label="toggle 1 text label"}
@@ -134,7 +134,7 @@ button_list.exclusive1=exclusive1
 button_list.exclusive2=exclusive2
 toggle_action_exclusive(exclusive2) -- settings
 
-local panel_background={toggle_1[1]-10,toggle_1[2]-10, 3*100,2*100}
+panel_background={toggle_1[1]-10,toggle_1[2]-10, 3*100,130}
 function panel_background.draw(button)
   rectangular(button,0,0,0)
   ---draw_centered_text(button[1],button[2],button[3],button[4],"panel text")
@@ -143,7 +143,7 @@ function panel_background.action() end
 button_list.panel_background=panel_background
 
 
-local panel_tab1={toggle_1[1]-10,toggle_1[2]-10, 3*100,2*100}
+panel_tab1={toggle_1[1]-10,toggle_1[2]-10, panel_background[3],panel_background[4]}
 function panel_tab1.draw(button)
   ---rectangular(button,0,0,0)
   draw_centered_text(button[1],button[2],button[3],button[4],"panel text")
@@ -159,15 +159,40 @@ button_list.panel_tab1=panel_tab1
 --button_list={quit=button_quit,toggle_1=button_toggle_1,toggle_2=button_toggle_2,live_added=button_live_added} -- toggle_2=button_toggle_2,
 button_list_back_to_front={
 panel_background,
-button_list.exclusive1,button_list.exclusive2,
+
+exclusive1,exclusive2,
+
 toggle_1,toggle_1_label,
 toggle_2,toggle_2_label,
+
 panel_tab1,
-quit}
+
+--quit
+}
 function draw_all_buttons()
   for key,button in ipairs(button_list_back_to_front) do
     if button.visible==nil or button.visible() then
       button_draw(button)
     end
   end
+end
+----------
+function button_draw(button)
+  -- click just pressed (not before)
+  if click_down==1 and
+    -- check for mouse pointer being inside the rectagle
+    point_in_rectangle(mouse_coordinates(),button)
+  then
+    button:action()
+  end
+  button:draw()
+end
+
+-- draw image scaled and fitting rectangle
+function image_draw(image,xywh)
+  -- scale factors
+  local sx=xywh[3]/image:getWidth()
+  local sy=xywh[4]/image:getHeight()
+  -- provide image, position, scale
+  love.graphics.draw(image, xywh[1],xywh[2],0, sx,sy)
 end
