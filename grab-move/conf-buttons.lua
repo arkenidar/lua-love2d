@@ -176,8 +176,20 @@ function draw_all_buttons()
     end
   end
 end
+function action_all_buttons()
+  for key,button in ipairs(button_list_back_to_front) do
+    if button.visible==nil or button.visible() then
+      button_action(button)
+    end
+  end
+end
 ----------
 function button_draw(button)
+  -- WIP: button_action(button) was here
+  button:draw()
+end
+-- WIP: button_action(button) was in button_draw()
+function button_action(button)
   -- click just pressed (not before)
   if click_down==1 and
     -- check for mouse pointer being inside the rectagle
@@ -185,7 +197,6 @@ function button_draw(button)
   then
     button:action()
   end
-  button:draw()
 end
 
 -- draw image scaled and fitting rectangle

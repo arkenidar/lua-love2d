@@ -43,6 +43,10 @@ function inner.draw(item)
   -- draw them
   draw_all_buttons()
 end
+function inner.action(item)
+  --draw_all_buttons() WIP
+  action_all_buttons()
+end
 handles[2].sub={inner}
 
 function rectangular(xywh,r,g,b)
@@ -136,8 +140,15 @@ function handle_area_action(handle)
   
   handle.button_delete:action()
   
+  -- action() of inner items (TODO WIP)
+  local items=handle.sub
+  if items==nil then items={} end
+  for _,item in pairs(items) do
+    item:action()
+    
+  end
+  
   local area= {xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]}
-   
   -- click just pressed
   if click_down==1 and
     -- check for mouse pointer being inside the rectagle
@@ -147,7 +158,7 @@ function handle_area_action(handle)
   end
 
   return continue -- continue (propagate) or not?
-end
+end -- end function handle_area_action()
 function handle_area_draw(handle)
   local xywh=handle
   ----------
