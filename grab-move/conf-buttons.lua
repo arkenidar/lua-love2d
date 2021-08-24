@@ -14,7 +14,7 @@ function conf_buttons_reload()
     button_states[key]=button.state -- by key
   end
   -- reload from file
-  love.filesystem.load("conf-buttons.lua")()
+  love.filesystem.load("main.lua")()
   -- restore states
   for key,button in pairs(button_list) do
     -- only if key exists in "backup" table ...
@@ -206,4 +206,11 @@ function image_draw(image,xywh)
   local sy=xywh[4]/image:getHeight()
   -- provide image, position, scale
   love.graphics.draw(image, xywh[1],xywh[2],0, sx,sy)
+end
+-------------
+function love.keypressed(key, u)
+  if key == "rctrl" then -- RightControl key
+    -- Configuration reload but preserve states
+    conf_buttons_reload()
+  end
 end
