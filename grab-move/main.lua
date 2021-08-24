@@ -112,9 +112,10 @@ function handle_area_action(handle)
   local button_delete={xywh[1]+(xywh[3]-xywh[4]),xywh[2], xywh[4],xywh[4]}
   
   function button_delete.draw(button)
-    love.graphics.setColor(0,1,0) -- green color
     local xywh=button
+    --love.graphics.setColor(0,1,0) -- green color
     love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh (button)
+    image_draw(images.x,xywh)
   end
   
   function button_delete.action(button)
