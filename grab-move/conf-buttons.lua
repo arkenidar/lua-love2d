@@ -208,9 +208,14 @@ function image_draw(image,xywh)
   love.graphics.draw(image, xywh[1],xywh[2],0, sx,sy)
 end
 -------------
-function love.keypressed(key, u)
-  if key == "rctrl" then -- RightControl key
-    -- Configuration reload but preserve states
+function love.keypressed(key)
+  -- F5 key
+  if key == "f5" then
+    
+    -- Configuration reload (but preserve states)
     conf_buttons_reload()
+    
+  elseif key == "escape" then
+    love.event.quit()
   end
 end

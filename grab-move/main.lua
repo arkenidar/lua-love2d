@@ -1,7 +1,14 @@
+
 -- debugging support (/pkulchenko/MobDebug setup, works also in ZeroBrane Studio)
+
 -- https://github.com/pkulchenko/MobDebug/blob/master/examples/start.lua
 -- https://raw.githubusercontent.com/pkulchenko/MobDebug/master/src/mobdebug.lua
-require("mobdebug").start()
+
+-- don't activate debugging if not specified this way
+if arg[#arg]=="-debug" then
+  -- activate debugging
+  require("mobdebug").start()
+end
 
 -- conf-buttons.lua file
 require("conf-buttons")
@@ -250,10 +257,15 @@ function love.draw()
   
   local items=handles
   -- input: front to back order
+  local continue
   for i = #items,1,-1 do
-    local continue
     continue=items[i]:action()
     if not continue then break end
+  end
+  -- when/event: "click on the background"
+  if continue and click_down==1 then
+    -- reload the app (some app state is kept)
+    conf_buttons_reload()
   end
 
   -- drawing: back to front order
