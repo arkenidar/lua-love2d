@@ -161,6 +161,20 @@ function handle_area_action(handle)
     point_in_rectangle(mouse_coordinates(),area)
   then
     continue=false
+    
+    ---[[ bring to front (back-to-front drawing order)
+    -- remove it (copy Lua table without it)
+    local handles_new={}
+    for _,value in pairs(handles) do
+      if value~=handle then -- without it
+        table.insert(handles_new,value) -- copy
+      end
+    end
+    -- insert at the end
+    table.insert(handles_new,handle)
+    handles=handles_new
+    -- end of: bring to front
+    --]]
   end
 
   return continue -- continue (propagate) or not?
