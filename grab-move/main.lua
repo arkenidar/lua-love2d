@@ -1,3 +1,8 @@
+-- debugging support (/pkulchenko/MobDebug setup, works also in ZeroBrane Studio)
+-- https://github.com/pkulchenko/MobDebug/blob/master/examples/start.lua
+-- https://raw.githubusercontent.com/pkulchenko/MobDebug/master/src/mobdebug.lua
+require("mobdebug").start()
+
 -- conf-buttons.lua file
 require("conf-buttons")
 
