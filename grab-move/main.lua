@@ -161,7 +161,9 @@ function handle_area_action(handle)
     
   end
   
-  local area= {xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]}
+  local area= {xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]} -- TODO custom area size
+  handle.area = area
+  
   -- click just pressed
   if click_down==1 and
     -- check for mouse pointer being inside the rectagle
@@ -188,6 +190,7 @@ function handle_area_action(handle)
 end -- end function handle_area_action()
 function handle_area_draw(handle)
   local xywh=handle
+  local area = handle.area
   ----------
   love.graphics.setColor(0,0,1) -- blue color
   if xywh.mouse_grab_offset~=nil then
@@ -202,10 +205,10 @@ function handle_area_draw(handle)
   --rectangular(xywh,1,1,1)
   ---[[
   love.graphics.setColor(0.5,0.5,0.5) -- grey color
-  love.graphics.rectangle("fill", xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]) -- xywh (area border)
+  love.graphics.rectangle("fill", xywh[1], xywh[2]+xywh[4], xywh[3], area[4]) -- xywh (area border)
 
   love.graphics.setColor(0,0,0) -- black color
-  love.graphics.rectangle("fill", xywh[1]+10, xywh[2]+xywh[4]+10, xywh[3]-20, 4*xywh[4]-20) -- xywh (area)
+  love.graphics.rectangle("fill", xywh[1]+10, xywh[2]+xywh[4]+10, xywh[3]-20, area[4]-20) -- xywh (area)
   --]]
   
   -- draw inner items (TODO WIP)
