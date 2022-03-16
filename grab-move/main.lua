@@ -10,12 +10,16 @@ if arg[#arg]=="-debug" then
   require("mobdebug").start()
 end
 
+function love.load()
+  love.window.setMode(600,400) -- windows size
+end
+
 -- conf-buttons.lua file
 require("conf-buttons")
 
 handles={}
-handles[1]={50,50,500,50} -- xywh
-handles[2]={100,100+20,500,60} -- xywh
+handles[1]={30,30,500,50} -- xywh
+handles[2]={50,50+20,500,60} -- xywh
 
 inner={nil,nil, 100,100, offset={20,70}, super=handles[2]}
 function inner.draw(item)
@@ -62,7 +66,7 @@ end
 handles[2].sub={inner}
 
 function rectangular(xywh,r,g,b)
-  love.graphics.setColor(0,0,1) -- white color (border color)
+  love.graphics.setColor(1,1,1) -- white color (border color)
   -- xywh (area border)
   love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
 
@@ -125,7 +129,7 @@ function handle_area_action(handle)
   
   function button_delete.draw(button)
     local xywh=button
-    --love.graphics.setColor(0,1,0) -- green color
+    love.graphics.setColor(1,1,1) -- white color
     love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh (button)
     image_draw(images.x,xywh)
   end
@@ -192,11 +196,16 @@ function handle_area_draw(handle)
   local xywh=handle
   local area = handle.area
   ----------
+  local r,g,b
   love.graphics.setColor(0,0,1) -- blue color
+  r,g,b=0,0,1
   if xywh.mouse_grab_offset~=nil then
     love.graphics.setColor(1,0,0) -- red color (grabbed)
+    r,g,b=1,0,0
   end
-  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3]-xywh[4], xywh[4]) -- xywh (handle)
+  ---love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3]-xywh[4], xywh[4]) -- xywh (handle)
+  local xywh2 = {xywh[1], xywh[2], xywh[3]-xywh[4], xywh[4]}
+  rectangular(xywh2,r,g,b)
   
   -- button_delete
   handle.button_delete:draw()

@@ -34,16 +34,20 @@ function conf_buttons_reload()
 end
 
 ----------------------------
-quit={10,10, 100,100} -- global variable not local (then exported from this file to "main.lua")
+quit={10,10, 50,50} -- global variable not local (then exported from this file to "main.lua")
 function quit.draw(button)
-  love.graphics.setColor(1,1,1) -- reset color
+  love.graphics.setColor(1,1,1) -- reset color (white)
   image_draw(images.x,button)
 end
-function quit.action() love.event.quit() end
+function quit.action()
+  love.event.quit()
+end
 button_list.quit=quit
 ----------------------------
 
 function toggle_draw(button)
+  love.graphics.setColor(0,0,0)
+  
   local state
   if button.state then state="filled" else state="empty" end
   image_draw(images[state],button)
@@ -65,6 +69,8 @@ function draw_vertically_centered_text(text, rectX,rectY, rectWidth,rectHeight)
 end
 
 function toggle_label_draw(button)
+  love.graphics.setColor(0,0,0)
+   
   local xywh=button
   --rectangular(xywh,0,1,0) -- prototype remnants, TODO: remove
   --love.graphics.print(button.text_label,xywh[1],xywh[2])
@@ -187,6 +193,7 @@ function panel_tab1.draw(button)
   button[4]-border_size*2
   )
   
+  love.graphics.setColor(0,0,0) -- black color
   draw_centered_text(button[1],button[2],button[3],button[4],"panel text (tab1, scissored and draggable!)")
   
   -- draw image that is visually clipped by button region (panel button in this case)
@@ -205,7 +212,7 @@ function panel_tab1.draw(button)
     button[4]-padding*2,
   }
   -- xywh=button -- DEBUG
-  love.graphics.setColor(1,0,0) -- red color (debug color)
+  --love.graphics.setColor(1,0,0) -- red color (debug color)
   -- xywh (area border) -- TODO copied from: "rectangular(xywh,r,g,b)"
   ---love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
   
