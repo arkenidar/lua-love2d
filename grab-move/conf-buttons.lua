@@ -33,26 +33,14 @@ function conf_buttons_reload()
   
 end
 
-----
-
-function rectangular(xywh,r,g,b)
-  love.graphics.setColor(1,1,1) -- white color (border color)
-  -- xywh (area border)
-  love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
-
-  local border=5
-  love.graphics.setColor(r,g,b) -- selected color (inner color)
-  -- xywh (inner area inside the border)
-  love.graphics.rectangle("fill", xywh[1]+border, xywh[2]+border, xywh[3]-border*2, xywh[4]-border*2)
-  
-  -- reset
-  love.graphics.setColor(1,1,1) -- reset to white
-end
 ----------------------------
-local quit={10,10, 100,100}
-function quit.draw(button) image_draw(images.x,button) end
+quit={10,10, 100,100} -- global variable not local (then exported from this file to "main.lua")
+function quit.draw(button)
+  love.graphics.setColor(1,1,1) -- reset color
+  image_draw(images.x,button)
+end
 function quit.action() love.event.quit() end
----button_list.quit=quit
+button_list.quit=quit
 ----------------------------
 
 function toggle_draw(button)
@@ -78,7 +66,7 @@ end
 
 function toggle_label_draw(button)
   local xywh=button
-  --rectangular(xywh,0,1,0)
+  --rectangular(xywh,0,1,0) -- prototype remnants, TODO: remove
   --love.graphics.print(button.text_label,xywh[1],xywh[2])
   draw_vertically_centered_text(button.text_label, xywh[1],xywh[2],xywh[3],xywh[4])
 end
@@ -103,7 +91,7 @@ function label_set_text_label(label,text)
 end
 label_set_text_label(toggle_1_label,toggle_1_label.text_label)
 label_set_text_label(toggle_2_label,toggle_2_label.text_label)
---[[
+--[[ -- excessive engineering here, so I kept it basic
 function label_text(label, new_text)
   if new_text~=nil then
     label.text_label = new_text
@@ -122,6 +110,7 @@ function visible_tab_2()
   return button_list.exclusive2.state
 end
 
+-- TODO visibles (visible items) can be grouped (show/hide groups of visibles e.g. for tabbed view)
 toggle_1.visible=visible_tab_2
 toggle_2.visible=visible_tab_2
 toggle_1_label.visible=visible_tab_2
@@ -144,17 +133,17 @@ function toggle_draw_exclusive(button)
   image_draw(images[state],button)
   --]]
   local r,g,b
-  if current then r,g,b=1,1,1 else r,g,b=0,0,0 end
-  rectangular(button,r,g,b)
+  if current then r,g,b=1,0,0 else r,g,b=0.5,0.5,0.5 end -- current? red else grey
+  rectangular(button,r,g,b) -- draw "exclusive-selection button"
 end
 function toggle_action_exclusive(button)
   ---button.state[1]=button.id
-  local group=button.mutex
+  local group=button.mutex -- mutex (mutually exclusive selection, mut.ex.)
   for _,name in pairs(group) do button_list[name].state=false end
   button.state=true
 end
 
----shared_state1={}
+---shared_state1={} -- TODO remove remnants of previous implementation. kept for historical reference
 local mutually_exclusive1={"exclusive1","exclusive2"}
 exclusive1={toggle_1[1],10, 100,50, draw=toggle_draw_exclusive,action=toggle_action_exclusive,
   --state=false,
@@ -168,11 +157,11 @@ exclusive2={exclusive1[1]+exclusive1[3]+10,10, exclusive1[3],exclusive1[4], draw
 --]]
 button_list.exclusive1=exclusive1
 button_list.exclusive2=exclusive2
-toggle_action_exclusive(exclusive2) -- settings
+toggle_action_exclusive(exclusive1) -- settings -- was: exclusive2 (when I focused there)
 
 panel_background={toggle_1[1]-10,toggle_1[2]-10, 3*100,130}
 function panel_background.draw(button)
-  rectangular(button,0,0,0)
+  rectangular(button,0,1,0) -- TODO color settings (was: green)
   ---draw_centered_text(button[1],button[2],button[3],button[4],"panel text")
 end
 function panel_background.action() end
@@ -181,36 +170,103 @@ button_list.panel_background=panel_background
 
 panel_tab1={toggle_1[1]-10,toggle_1[2]-10, panel_background[3],panel_background[4]}
 function panel_tab1.draw(button)
-  ---rectangular(button,0,0,0)
-  draw_centered_text(button[1],button[2],button[3],button[4],"panel text")
+  
+  love.graphics.push() -- geometric transforms stack push
+  love.graphics.translate(tx, ty)
+  
+  ---rectangular(button,0,0,0) -- prototyping
+  ---draw_centered_text(button[1],button[2],button[3],button[4],"panel text (tab1, scissored and draggable!)")
+  
+  -- TODO draw image (with clipping i.e. love.graphics.setScissor)
+  local border_size = 5 -- settings
+  love.graphics.setScissor( -- scissors enabled and configured
+    -- this is reliable, not below
+  button[1]+border_size,
+  button[2]+border_size,
+  button[3]-border_size*2,
+  button[4]-border_size*2
+  )
+  
+  draw_centered_text(button[1],button[2],button[3],button[4],"panel text (tab1, scissored and draggable!)")
+  
+  -- draw image that is visually clipped by button region (panel button in this case)
+  
+  local image_button
+  image_button={button[1]+30,button[2]+80,button[3],button[4]}
+  rectangular(image_button,0,1,1) -- color settings (currently: green-blue)
+  -- TODO: investigate panel_background's kind of unreliable positioning
+  -- ... falling back to: love.graphics.rectangle() and image_draw() (see below)
+  
+  local padding = 5
+  local xywh = { -- panel_background
+    button[1]+padding,
+    button[2]+padding,
+    button[3]-padding*2,
+    button[4]-padding*2,
+  }
+  -- xywh=button -- DEBUG
+  love.graphics.setColor(1,0,0) -- red color (debug color)
+  -- xywh (area border) -- TODO copied from: "rectangular(xywh,r,g,b)"
+  ---love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
+  
+  -- TODO scissors above not here
+  ----love.graphics.setScissor( -- scissors enabled
+  ----xywh[1],xywh[2],xywh[3],xywh[4]) -- scissors configured
+ 
+  -- @ draw inside scissored region (bottom-right)
+  ----love.graphics.rectangle("fill",xywh[1]+30,xywh[2]+80,xywh[3],xywh[4])
+  ----image_draw(images.x, {xywh[1]+30,xywh[2]+80,xywh[3],xywh[4]} )
+  
+  -- @ draw inside scissored region (top-left)
+  ---love.graphics.rectangle("fill",xywh[1]-30,xywh[2]-80,xywh[3],xywh[4])
+  image_draw(images.x, {xywh[1]-30,xywh[2]-80,xywh[3],xywh[4]} )
+--rectangular({button[1]-30,button[2]-80,button[3],button[4]},0,1,1) -- TODO
+
+  -- scissors disabled
+  love.graphics.setScissor()
+  
+  love.graphics.pop() -- pop from geometric transforms stack
 end
-function panel_tab1.action() end
+function panel_tab1.action()
+  -- no actions
+end
 function visible_tab_1()
   return button_list.exclusive1.state
 end
 panel_tab1.visible=visible_tab_1
 button_list.panel_tab1=panel_tab1
 
-
+-- TODO "live_added"
 --button_list={quit=button_quit,toggle_1=button_toggle_1,toggle_2=button_toggle_2,live_added=button_live_added} -- toggle_2=button_toggle_2,
 button_list_back_to_front={
-panel_background,
 
-exclusive1,exclusive2,
+exclusive1,exclusive2, -- tabs
 
+panel_background, -- tabs area
+
+-- clip begin
+--- add button action to clip (really?) TODO decide
+
+panel_tab1, -- tab1
+
+-- tab2
 toggle_1,toggle_1_label,
 toggle_2,toggle_2_label,
 
-panel_tab1,
+-- clip end
+--- add button action to un-clip
 
---quit
+--quit, -- TODO remove?
+
 }
+
 function draw_all_buttons()
   for key,button in ipairs(button_list_back_to_front) do
     if button.visible==nil or button.visible() then
       button_draw(button)
     end
   end
+  ---button_draw(quit) -- always draw on top of the rest (the previous)
 end
 function action_all_buttons()
   for key,button in ipairs(button_list_back_to_front) do
@@ -218,6 +274,7 @@ function action_all_buttons()
       button_action(button)
     end
   end
+  ---button_action(quit) -- always draw on top of the rest (the previous)
 end
 ----------
 function button_draw(button)

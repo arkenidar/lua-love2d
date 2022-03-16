@@ -62,7 +62,7 @@ end
 handles[2].sub={inner}
 
 function rectangular(xywh,r,g,b)
-  love.graphics.setColor(1,1,1) -- white color (border color)
+  love.graphics.setColor(0,0,1) -- white color (border color)
   -- xywh (area border)
   love.graphics.rectangle("fill", xywh[1], xywh[2], xywh[3], xywh[4]) -- xywh
 
@@ -155,7 +155,7 @@ function handle_area_action(handle)
   
   -- action() of inner items (TODO WIP)
   local items=handle.sub
-  if items==nil then items={} end
+  if items==nil then items={} end -- skip if empty/nil
   for _,item in pairs(items) do
     item:action()
     
@@ -253,13 +253,38 @@ function click_get_input()
   end
 end
 ------------------------------------------
+tx=0
+ty=0
 function love.draw()
+	mx = love.mouse.getX()
+	my = love.mouse.getY()
+	if love.mouse.isDown(1) and
+    -- panel_tab1 is draggable
+    point_in_rectangle({mx,my},panel_tab1)
+  then
+		if not mouse_pressed then
+			mouse_pressed = true
+			dx = tx-mx
+			dy = ty-my
+		else
+			tx = mx+dx
+			ty = my+dy
+		end
+	elseif mouse_pressed then
+		mouse_pressed = false
+	end
+	---love.graphics.translate(tx, ty)
   
   -- input: click_get_input()
-  click_get_input()
+  click_get_input() -- fix for lack in love2d of this kind of event detection
   
   local items=handles
   -- input: front to back order
+  
+  -- first input: always on top
+  ---quit:action() -- wrong: no checks just fires up action
+  button_action(quit) -- proper: does checks
+  
   local continue
   for i = #items,1,-1 do
     continue=items[i]:action()
@@ -275,6 +300,8 @@ function love.draw()
   for i = 1,#items,1 do
     items[i]:draw()
   end
+  
+  quit:draw() -- draw last (always on top)
   
   -- TODO WIP
   ---draw_all_buttons()
