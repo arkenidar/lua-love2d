@@ -198,12 +198,31 @@ function panel_tab1.draw(button)
   
   -- draw image that is visually clipped by button region (panel button in this case)
   
+  local text_string="A****************************************************************************************************Z"
+  local border=5
+  -- draw rectangle (x,y,width,height)
   local image_button
-  image_button={button[1]+30,button[2]+80,button[3],button[4]}
+  local width,height
+  local x,y=button[1]+30,button[2]+80
+  width=200 -- some chosen width
+  
+  local wrap_limit=width-2*border
+  local font=love.graphics.getFont()
+  local wrapped_width,wrapped_text=font:getWrap(text_string, wrap_limit)
+  -- calculated height
+  height=2*border+font:getHeight()*#wrapped_text
+  
+  -- rectangle (xywh)
+  image_button={x,y,width,height}
+  --- first draw rectangular background for text
   rectangular(image_button,0,1,1) -- color settings (currently: green-blue)
+  --- then draw text on rectangular background
+  -- draw text_string inside rectangular drawing (with borders, and wraplimit)
+  love.graphics.printf(text_string,x+border,y+border,wrap_limit)
+  
+  ----------------------------------
   -- TODO: investigate panel_background's kind of unreliable positioning
   -- ... falling back to: love.graphics.rectangle() and image_draw() (see below)
-  
   local padding = 5
   local xywh = { -- panel_background
     button[1]+padding,
