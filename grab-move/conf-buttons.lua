@@ -178,7 +178,7 @@ panel_tab1={toggle_1[1]-10,toggle_1[2]-10, panel_background[3],panel_background[
 function panel_tab1.draw(button)
   
   love.graphics.push() -- geometric transforms stack push
-  love.graphics.translate(tx, ty)
+  love.graphics.translate(draggable.tx, draggable.ty)
   
   ---rectangular(button,0,0,0) -- prototyping
   ---draw_centered_text(button[1],button[2],button[3],button[4],"panel text (tab1, scissored and draggable!)")

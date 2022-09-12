@@ -262,25 +262,24 @@ function click_get_input()
   end
 end
 ------------------------------------------
-tx=0
-ty=0
+draggable={tx=0,ty=0}
 function love.draw()
-	mx = love.mouse.getX()
-	my = love.mouse.getY()
+  local mx = love.mouse.getX()
+	local my = love.mouse.getY()
 	if love.mouse.isDown(1) and
     -- panel_tab1 is draggable
     point_in_rectangle({mx,my},panel_tab1)
   then
-		if not mouse_pressed then
-			mouse_pressed = true
-			dx = tx-mx
-			dy = ty-my
+		if not draggable.mouse_pressed then
+			draggable.mouse_pressed = true
+			draggable.dx = draggable.tx-mx
+			draggable.dy = draggable.ty-my
 		else
-			tx = mx+dx
-			ty = my+dy
+			draggable.tx = mx+draggable.dx
+			draggable.ty = my+draggable.dy
 		end
-	elseif mouse_pressed then
-		mouse_pressed = false
+	elseif draggable.mouse_pressed then
+		draggable.mouse_pressed = false
 	end
 	---love.graphics.translate(tx, ty)
   
