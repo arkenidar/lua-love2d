@@ -175,8 +175,9 @@ button_list.panel_background=panel_background
 
 
 panel_tab1={toggle_1[1]-10,toggle_1[2]-10, panel_background[3],panel_background[4]}
+panel_tab1.draggable={tx=0,ty=0}
 function panel_tab1.draw(button)
-  
+  local draggable=panel_tab1.draggable
   love.graphics.push() -- geometric transforms stack push
   love.graphics.translate(draggable.tx, draggable.ty)
   

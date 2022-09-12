@@ -262,8 +262,8 @@ function click_get_input()
   end
 end
 ------------------------------------------
-draggable={tx=0,ty=0}
 function love.draw()
+  local draggable=panel_tab1.draggable
   local mx = love.mouse.getX()
 	local my = love.mouse.getY()
 	if love.mouse.isDown(1) and
