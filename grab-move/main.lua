@@ -11,7 +11,7 @@ if arg[#arg]=="-debug" then
 end
 
 function love.load()
-  love.window.setMode(600,400,{resizable=true}) -- windows size
+  love.window.setMode(600,400) -- windows size
 end
 
 -- conf-buttons.lua file
@@ -20,7 +20,6 @@ require("conf-buttons")
 handles={}
 handles[1]={30,30,500,50} -- xywh
 handles[2]={50,50+20,500,60} -- xywh
-handles[3]={80,80,200,50, heigth=150 } -- xywh
 
 inner={nil,nil, 100,100, offset={20,70}, super=handles[2]}
 function inner.draw(item)
@@ -61,6 +60,7 @@ function inner.draw(item)
   draw_all_buttons()
 end
 function inner.action(item)
+  --draw_all_buttons() WIP
   action_all_buttons()
 end
 handles[2].sub={inner}
@@ -155,14 +155,23 @@ function handle_area_action(handle)
   handle.button_delete=button_delete
   ------------ end button_delete
   
-  handle.button_delete:action() -- action with trigger-checks
-
-  handle.area = {xywh[1], xywh[2]+xywh[4], xywh[3], handle.heigth or 4*xywh[4]} -- xywh is handle
+  handle.button_delete:action()
+  
+  -- action() of inner items (TODO WIP)
+  local items=handle.sub
+  if items==nil then items={} end -- skip if empty/nil
+  for _,item in pairs(items) do
+    item:action()
+    
+  end
+  
+  local area= {xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]} -- TODO custom area size
+  handle.area = area
   
   -- click just pressed
   if click_down==1 and
     -- check for mouse pointer being inside the rectagle
-    point_in_rectangle(mouse_coordinates(),handle.area)
+    point_in_rectangle(mouse_coordinates(),area)
   then
     continue=false
     
@@ -180,16 +189,9 @@ function handle_area_action(handle)
     -- end of: bring to front
     --]]
   end
-  
-  if handles[#handles]==handle then
-    for _,item in pairs(handle.sub or {}) do
-    item:action()
-    end
-  end
 
   return continue -- continue (propagate) or not?
 end -- end function handle_area_action()
-
 function handle_area_draw(handle)
   local xywh=handle
   local area = handle.area
@@ -208,7 +210,7 @@ function handle_area_draw(handle)
   -- button_delete
   handle.button_delete:draw()
   
-  -- draw rectangle with border rectangular(xywh,r,g,b)
+  -- TODO draw rectangle with border rectangular(xywh,r,g,b)
   --rectangular(xywh,1,1,1)
   ---[[
   love.graphics.setColor(0.5,0.5,0.5) -- grey color
@@ -218,10 +220,17 @@ function handle_area_draw(handle)
   love.graphics.rectangle("fill", xywh[1]+10, xywh[2]+xywh[4]+10, xywh[3]-20, area[4]-20) -- xywh (area)
   --]]
   
-  -- draw inner items
-  for _,item in pairs(handle.sub or {}) do
+  -- draw inner items (TODO WIP)
+  local items=handle.sub
+  if items==nil then items={} end
+  for _,item in pairs(items) do
     item:draw()
+    
   end
+  
+  -- WIP TODO
+  ---handle1[1]
+  --draw_all_buttons()
   
 end
 
@@ -253,11 +262,27 @@ function click_get_input()
   end
 end
 ------------------------------------------
-
-panel_tab1.context = {tx=0,ty=0}
-panel_tab1.act=true
-
+tx=0
+ty=0
 function love.draw()
+	mx = love.mouse.getX()
+	my = love.mouse.getY()
+	if love.mouse.isDown(1) and
+    -- panel_tab1 is draggable
+    point_in_rectangle({mx,my},panel_tab1)
+  then
+		if not mouse_pressed then
+			mouse_pressed = true
+			dx = tx-mx
+			dy = ty-my
+		else
+			tx = mx+dx
+			ty = my+dy
+		end
+	elseif mouse_pressed then
+		mouse_pressed = false
+	end
+	---love.graphics.translate(tx, ty)
   
   -- input: click_get_input()
   click_get_input() -- fix for lack in love2d of this kind of event detection
@@ -274,7 +299,6 @@ function love.draw()
     continue=items[i]:action()
     if not continue then break end
   end
-  
   -- when/event: "click on the background"
   if continue and click_down==1 then
     -- reload the app (some app state is kept)
@@ -288,4 +312,6 @@ function love.draw()
   
   quit:draw() -- draw last (always on top)
   
+  -- TODO WIP
+  ---draw_all_buttons()
 end
