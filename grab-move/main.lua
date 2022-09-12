@@ -157,35 +157,13 @@ function handle_area_action(handle)
   
   handle.button_delete:action()
   
-  local on_top = handles[#handles]==handle
+  on_top = handles[#handles]==handle
   
   -- action() of inner items (TODO WIP)
   local items=handle.sub
   if items==nil then items={} end -- skip if empty/nil
   for _,item in pairs(items) do
     item:action()
-    
-    -- action only if on_top
-    if on_top then
-      local draggable=panel_tab1.draggable
-      local mx = love.mouse.getX()
-      local my = love.mouse.getY()
-      if love.mouse.isDown(1) and
-        -- panel_tab1 is draggable
-        point_in_rectangle({mx,my},panel_tab1)
-      then
-        if not draggable.mouse_pressed then
-          draggable.mouse_pressed = true
-          draggable.dx = draggable.tx-mx
-          draggable.dy = draggable.ty-my
-        else
-          draggable.tx = mx+draggable.dx
-          draggable.ty = my+draggable.dy
-        end
-      elseif draggable.mouse_pressed then
-        draggable.mouse_pressed = false
-      end
-    end
   end
   
   local area= {xywh[1], xywh[2]+xywh[4], xywh[3], 4*xywh[4]} -- TODO custom area size

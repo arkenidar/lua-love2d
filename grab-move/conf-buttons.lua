@@ -254,8 +254,32 @@ function panel_tab1.draw(button)
   
   love.graphics.pop() -- pop from geometric transforms stack
 end
-function panel_tab1.action()
-  -- no actions
+
+panel_tab1.act=true -- used in function button_action(button)
+function panel_tab1.action(obj)
+  if on_top and obj.on_top then
+    obj:on_top() -- action only if on_top
+  end
+end
+function panel_tab1.on_top(obj)
+  local draggable=obj.draggable
+  local mx = love.mouse.getX()
+  local my = love.mouse.getY()
+  if love.mouse.isDown(1) and
+    -- panel_tab1 is draggable
+    point_in_rectangle({mx,my},obj)
+  then
+    if not draggable.mouse_pressed then
+      draggable.mouse_pressed = true
+      draggable.dx = draggable.tx-mx
+      draggable.dy = draggable.ty-my
+    else
+      draggable.tx = mx+draggable.dx
+      draggable.ty = my+draggable.dy
+    end
+  elseif draggable.mouse_pressed then
+    draggable.mouse_pressed = false
+  end
 end
 function visible_tab_1()
   return button_list.exclusive1.state
@@ -311,9 +335,12 @@ end
 -- WIP: button_action(button) was in button_draw()
 function button_action(button)
   -- click just pressed (not before)
-  if click_down==1 and
+  if button.act or
+    (
+    click_down==1 and
     -- check for mouse pointer being inside the rectagle
     point_in_rectangle(mouse_coordinates(),button)
+    )
   then
     button:action()
   end
