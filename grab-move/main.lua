@@ -12,6 +12,7 @@ end
 
 function love.load()
   love.window.setMode(600,400) -- windows size
+  love.window.setTitle("https://github.com/arkenidar/lua-love2d/tree/main/grab-move")
 end
 
 -- conf-buttons.lua file
