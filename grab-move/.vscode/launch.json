@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug LOVE2D (Linux. PATH)",
+            "type": "lua-local", // tomblind.local-lua-debugger-vscode
+            "request": "launch",
+            "program": {
+                "command": "love"
+            },
+            "args": [
+                "${workspaceFolder}"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Debug LOVE2D (Win. NOT BUNDLED)",
+            "type": "lua-local", // tomblind.local-lua-debugger-vscode
+            "request": "launch",
+            "program": {
+                "command": "C:\\apps\\love2d\\love.exe"
+            },
+            "args": [
+                "${workspaceFolder}"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
